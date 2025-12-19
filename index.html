@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sidetool Logistics - AI Lead Qualification & FAQ Support</title>
+    <title>Cosmo Agent - AI Sales Handling & Conversational Automation</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
@@ -323,7 +323,7 @@
         <!-- Live Badge -->
         <div class="badge">
           <div class="pulse-dot"></div>
-          LIVE: Logistics AI Assistant
+          LIVE: Cosmo AI Agent
         </div>
 
         <!-- Voice Waves -->
@@ -337,14 +337,10 @@
         <!-- Status Display -->
         <div id="status-area">
           <h2>
-            Sidetool Logistics
+            Cosmo Agent
             <br />
-            <span class="subtitle">AI Lead Qualification & FAQ Support</span>
+            <span class="subtitle">AI Sales Handling & Conversational Automation</span>
           </h2>
-
-          <p class="description">
-            Connect with our AI agent for instant logistics quotes, lead qualification, and answers to your shipping questions.
-          </p>
 
           <!-- Phone Number Input -->
           <div style="max-width: 400px; margin: 0 auto 1.5rem;">
@@ -378,7 +374,7 @@
           <h2>
             Connected
             <br />
-            <span class="subtitle">Logistics AI Agent</span>
+            <span class="subtitle">Cosmo AI Agent</span>
           </h2>
 
           <div class="success-text">✅ Voice call active</div>
@@ -442,7 +438,7 @@
       }
 
       // Validate phone input and enable/disable button
-      function validatePhoneInput() {
+      window.validatePhoneInput = function() {
         const phoneInput = document.getElementById('phone-input');
         const connectBtn = document.getElementById('connect-btn');
         const phoneValue = phoneInput ? phoneInput.value.trim() : '';
@@ -452,7 +448,7 @@
         } else {
           connectBtn.disabled = true;
         }
-      }
+      };
 
       let retellClient = null;
       let callDuration = 0;
