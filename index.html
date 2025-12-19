@@ -346,7 +346,27 @@
             Connect with our AI agent for instant logistics quotes, lead qualification, and answers to your shipping questions.
           </p>
 
-          <button id="connect-btn" class="btn-primary" onclick="startCall()">
+          <!-- Phone Number Input -->
+          <div style="max-width: 400px; margin: 0 auto 1.5rem;">
+            <label for="phone-input" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; text-align: left;">
+              Phone Number (for testing) <span style="color: #dc2626;">*</span>
+            </label>
+            <input
+              type="tel"
+              id="phone-input"
+              placeholder="+15551234567"
+              required
+              style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; font-family: inherit; outline: none; transition: border-color 0.2s;"
+              onfocus="this.style.borderColor='#3b82f6'"
+              onblur="this.style.borderColor='#d1d5db'"
+              oninput="validatePhoneInput()"
+            />
+            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem; text-align: left;">
+              Enter phone number to test different conversation flows
+            </p>
+          </div>
+
+          <button id="connect-btn" class="btn-primary" onclick="startCall()" disabled>
             Start Voice Call
           </button>
 
@@ -411,8 +431,28 @@
       // Configuration
       const CONFIG = {
         publicKey: 'key_303206f7fb34e74225c5b6e0fac4',
-        agentId: 'agent_6da1061ebd5d12e003656acf9a'
+        agentId: 'agent_e16db9fdfe1b53787b6235904c'
       };
+
+      // Function to get phone number from the input field
+      function getPhoneNumber() {
+        const phoneInput = document.getElementById('phone-input');
+        const phoneValue = phoneInput ? phoneInput.value.trim() : '';
+        return phoneValue || null;
+      }
+
+      // Validate phone input and enable/disable button
+      function validatePhoneInput() {
+        const phoneInput = document.getElementById('phone-input');
+        const connectBtn = document.getElementById('connect-btn');
+        const phoneValue = phoneInput ? phoneInput.value.trim() : '';
+        
+        if (phoneValue.length > 0) {
+          connectBtn.disabled = false;
+        } else {
+          connectBtn.disabled = true;
+        }
+      }
 
       let retellClient = null;
       let callDuration = 0;
@@ -474,7 +514,32 @@
           btn.textContent = 'Connecting...';
           hideError();
 
+          // Get phone number (required)
+          const phoneNumber = getPhoneNumber();
+          
+          // Validate phone number is required
+          if (!phoneNumber || phoneNumber.trim() === '') {
+            showError('Phone number is required');
+            const btn = document.getElementById('connect-btn');
+            btn.disabled = false;
+            btn.textContent = 'Start Voice Call';
+            return;
+          }
+
           console.log('🚀 Creating web call...');
+          
+          // Build request body with dynamic variables
+          const requestBody = {
+            agent_id: CONFIG.agentId
+          };
+
+          // Add dynamic variables if phone number is available
+          if (phoneNumber) {
+            requestBody.retell_llm_dynamic_variables = {
+              user_phone: phoneNumber
+            };
+            console.log('📞 Phone number variable (user_phone):', phoneNumber);
+          }
 
           const response = await fetch('https://api.retellai.com/v2/create-web-call', {
             method: 'POST',
@@ -482,9 +547,7 @@
               'Authorization': `Bearer ${CONFIG.publicKey}`,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              agent_id: CONFIG.agentId
-            })
+            body: JSON.stringify(requestBody)
           });
 
           if (!response.ok) {
@@ -527,7 +590,8 @@
         document.getElementById('status-area').classList.remove('hidden');
         document.getElementById('connected-area').classList.add('hidden');
         const btn = document.getElementById('connect-btn');
-        btn.disabled = false;
+        // Re-enable button only if phone number is filled
+        validatePhoneInput();
         btn.textContent = 'Start Voice Call';
         stopTimer();
       }
@@ -572,6 +636,8 @@
       document.addEventListener('DOMContentLoaded', () => {
         console.log('🎯 Retell Web Call Demo initialized');
         initRetellClient();
+        // Validate phone input on page load (button starts disabled)
+        validatePhoneInput();
       });
     </script>
   </body>
